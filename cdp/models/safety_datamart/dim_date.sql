@@ -1,0 +1,36 @@
+SELECT "date",
+	full_date_uk,
+	full_date_usa,
+	day_of_month,
+	day_suffix,
+	day_name,
+	day_of_week,
+	day_of_week_in_month,
+	day_of_week_in_year,
+	day_of_quarter,
+	day_of_year,
+	week_of_month,
+	week_of_quarter,
+	week_of_year,
+	"month",
+	month_name,
+	"quarter",
+	quarter_name,
+	"year",
+	year_name,
+	month_year,
+	mmyyyy,
+	is_weekday,
+	week_commencing,
+	"period",
+	fyname,
+	fyperiod,
+	fyperiod_week,
+	CASE
+		WHEN fyperiod < 10 THEN (fyname || '0' || fyperiod)::integer
+		ELSE (fyname || fyperiod)::integer
+	END as FYM,
+	to_date(('01/' || fyperiod || '/20' || fyname), 'DD/MM/YYYY') as FYM_Start_Label,
+	LAST_DAY(to_date(('01/' || fyperiod || '/20' || fyname), 'DD/MM/YYYY')) as FYM_End_Label
+FROM {{ source('generated', 'dim_date') }}
+ORDER BY date DESC

@@ -1,0 +1,40 @@
+version: 0.2
+
+env:
+  variables:
+    variables:
+    RS_HOST_NAME: "cdp-dev-ingestion-cluster.cid05enmie3a.ap-southeast-2.redshift.amazonaws.com"
+    RS_DB_NAME: "cdp_prod"
+    RS_DBT_USER: 	"dbt_prod"
+    RS_CLUSTER_ID: "cdp-dev-ingestion-cluster"
+    RS_PORT: 5439
+
+phases:
+  pre_build:
+    commands:
+      - echo "Starting"
+      - yum -y install git libpq-dev python-dev python3-pip
+      - yum remove python-cffi
+      - pip3 install --upgrade cffi
+      - pip3 install cryptography~=3.4
+      - pip3 install dbt
+      - pip3 install dbt-redshift
+      - echo "Finished"
+
+  build:
+    commands:
+      - echo Build started
+      - echo $CODEBUILD_SOURCE_VERSION
+      - echo $CODEBUILD_WEBHOOK_HEAD_REF
+      - git checkout $CODEBUILD_WEBHOOK_HEAD_REF
+      - git branch --show-current
+      - cd cdp
+      - dbt deps --profiles-dir ../ --target prod
+      - dbt compile --profiles-dir ../ --target prod
+      - dbt run --profiles-dir ../ --target prod
+      - dbt test --profiles-dir ../ --target prod
+      - dbt docs generate  --profiles-dir ../ --target prod
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      

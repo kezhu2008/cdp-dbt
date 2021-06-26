@@ -1,0 +1,38 @@
+version: 0.2
+
+env:
+  variables:
+    RS_HOST_NAME: "cdp-dev-ingestion-cluster.cid05enmie3a.ap-southeast-2.redshift.amazonaws.com"
+    RS_DB_NAME: "cdp_test"
+    RS_DBT_USER: 	"dbt_test"
+    RS_CLUSTER_ID: "cdp-dev-ingestion-cluster"
+    RS_PORT: 5439
+  parameter-store:
+    S3_DOC_BUCKET: "/dev/cdp/dbt-doc-s3-bucket"
+phases:
+  pre_build:
+    commands:
+      - echo "Starting"
+      - yum -y install git libpq-dev python-dev python3-pip
+      - yum remove python-cffi
+      - pip3 install --upgrade cffi
+      - pip3 install cryptography~=3.4
+      - pip3 install dbt
+      - pip3 install dbt-redshift
+      - echo "Finished"
+
+  build:
+    commands:
+      - echo Build started
+      - echo $CODEBUILD_SOURCE_VERSION
+      - echo $CODEBUILD_WEBHOOK_HEAD_REF
+      - git checkout $CODEBUILD_WEBHOOK_HEAD_REF
+      - git branch --show-current
+      - cd cdp
+      - dbt deps --profiles-dir ../ --target test
+      - dbt compile --profiles-dir ../ --target test
+      - dbt run --profiles-dir ../ --target test
+      - dbt test --profiles-dir ../ --target test
+  post_build:
+    commands:
+      - echo Build completed on `date`

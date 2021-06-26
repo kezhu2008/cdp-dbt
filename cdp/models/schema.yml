@@ -1,0 +1,70 @@
+
+version: 2
+
+models:
+    - name: event_fact
+      description: "The event fact table for the safety datamart"
+      columns:
+          - name: event_id_pk
+            description: "The id of each recorded event from chess"
+            tests:
+                - not_null
+                - unique
+    - name: chess_events
+      description: "An joined event view"
+      +materialized: table
+sources:
+    - name: ccm
+      schema: ingester_ccm_dbo
+      loader: redshift
+      loaded_at_field: _fivetran_synced
+      tables:
+        - name: node
+          identifier: ccm_node
+        - name: relationship
+          identifier: ccm_relationship
+        - name: hierarchy
+          identifier: ccm_hierarchy
+        - name: payroll
+          identifier: ccm_payroll
+        - name: commonmaster_mst
+          identifiier: ccm_commonmaster_mst
+        - name: cost_centre_dtl
+          identifier: ccm_cost_centre_dtl
+        - name: client_dtl
+          identifier: ccm_client_dtl
+        - name: contract_summary
+          identifier: ccm_contract_summary
+        - name: client_operational_setup
+          identifier: ccm_client_operational_setup
+        - name: mgmt_responsibility
+          identifier: ccm_mgmt_responsibility
+        - name: closure_dtl
+          identifier: ccm_closure_dtl
+    - name: chess
+      schema: ingester_chess_dbo
+      loader: redshift
+      loaded_at_field: _fivetran_synced
+      tables:
+        - name: event
+          identifier: c_events
+        - name: event_participant
+          identifier: c_eventparticipants
+        - name: event_subtype
+          identifier: c_eventsubtypes
+        - name: event_type
+          identifier: c_eventtypes
+        - name: exposure
+          identifier: c_exposure
+        - name: event_type_category
+          identifier: c_eventtypecategories
+        - name: class_values
+          identifier: s_classvalues
+
+    - name: generated
+      schema: ingester_gen_data
+      loader: redshift
+      loaded_at_field: _fivetran_synced
+      tables:
+        - name: dim_date
+          identifier: dim_date

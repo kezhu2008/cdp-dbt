@@ -1,0 +1,54 @@
+config:
+    send_anonymous_usage_stats: False
+    use_colors: True
+
+
+
+
+cdp-profile:
+  target: local-dev
+  outputs:
+    local-dev:
+      type: redshift
+      threads: 16
+      method: iam
+      host: "{{ env_var('RS_HOST_NAME') }}"
+      cluster_id: "{{ env_var('RS_CLUSTER_ID') }}"
+      port: "{{ env_var('RS_PORT') | int }}"
+      user: "{{ env_var('RS_DBT_USER') }}"
+      dbname: "{{ env_var('RS_DB_NAME') }}"
+      schema: "dev_{{ env_var('DBT_USER_NAME') }}"
+      client_session_keep_alive: True
+    dev:
+      type: redshift
+      threads: 16
+      method: iam
+      host: "{{ env_var('RS_HOST_NAME') }}"
+      cluster_id: "{{ env_var('RS_CLUSTER_ID') }}"
+      port: "{{ env_var('RS_PORT') | int }}"
+      user: "{{ env_var('RS_DBT_USER') }}"
+      dbname: "{{ env_var('RS_DB_NAME') }}"
+      schema: "dev"
+      client_session_keep_alive: True
+    test:
+      type: redshift
+      threads: 16
+      method: iam
+      host: "{{ env_var('RS_HOST_NAME') }}"
+      cluster_id: "{{ env_var('RS_CLUSTER_ID') }}"
+      port: "{{ env_var('RS_PORT') | int }}"
+      user: "{{ env_var('RS_DBT_USER') }}"
+      dbname: "{{ env_var('RS_DB_NAME') }}"
+      schema: "test"
+      client_session_keep_alive: True
+    prod:
+      type: redshift
+      threads: 16
+      method: iam
+      host: "{{ env_var('RS_HOST_NAME') }}"
+      cluster_id: "{{ env_var('RS_CLUSTER_ID') }}"
+      port: "{{ env_var('RS_PORT') | int }}"
+      user: "{{ env_var('RS_DBT_USER') }}"
+      dbname: "{{ env_var('RS_DB_NAME') }}"
+      schema: "prod"
+      client_session_keep_alive: True

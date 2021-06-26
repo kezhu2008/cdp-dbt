@@ -1,0 +1,31 @@
+version: 0.2
+
+env:
+  variables:
+    RS_HOST_NAME: "cdp-dev-ingestion-cluster.cid05enmie3a.ap-southeast-2.redshift.amazonaws.com"
+    RS_DB_NAME: "public"
+    RS_SCHEMA_NAME: "public"
+  parameter-store:
+    RS_DBT_USER: 	/dev/cdp/redshift-username
+    RS_DBT_USER_PASSWORD:	/dev/cdp/redshift-password
+
+phases:
+  pre_build:
+    commands:
+      - echo "Starting"
+      - yum -y install git libpq-dev python-dev python3-pip
+      - yum remove python-cffi
+      - pip3 install --upgrade cffi
+      - pip3 install cryptography~=3.4
+      - pip3 install dbt
+      - pip3 install dbt-redshift
+      - echo "Finished"
+
+  build:
+    commands:
+      - echo Build started
+      - cd cdp
+      - dbt compile --profiles-dir ../
+  post_build:
+    commands:
+      - echo Build completed on `date`
